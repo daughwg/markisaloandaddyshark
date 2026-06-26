@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # 1. Setup App Title and Google Sheets Base URL
-st.title("MarkIsALoanDaddyShark")
+st.title("🦈💰MarkIsALoanDaddyShark💰🦈")
 
 # Convert the standard sharing link to a direct download link for Pandas
 share_url = "https://docs.google.com/spreadsheets/d/1ZDK7eQlf7OECJYOVC4L1EaObTPD_2S7y14KyI8sJSM4/edit?usp=sharing"
