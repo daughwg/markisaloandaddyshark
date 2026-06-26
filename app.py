@@ -11,7 +11,7 @@ CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
 # Centralized Sheet link
 BASE_LINK = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit?usp=sharing"
 
-@st.cache_data(ttl=10)  # Dropped to 10 seconds to make testing updates faster
+@st.cache_data(ttl=10)  # Re-checks sheet every 10 seconds
 def load_data():
     try:
         df = pd.read_csv(CSV_URL)
@@ -44,22 +44,25 @@ if selected_name != "Select your profile...":
 
             cost_col = 'cost/individual'
             if cost_col not in df.columns:
-                cost_col = [c for c in df.columns if 'cost' in c or 'indiv' in c][0] if any('cost' in c or 'indiv' in c for c in df.columns) else 'cost'
+                cost_col = [c for c in df.columns if 'cost' in c or 'indiv' in c][0] if any('cost' in c for c in df.columns) else 'cost'
 
             # 2. Clean the core data strings to eliminate matching issues
             df_clean = df.copy()
             df_clean[name_col] = df_clean[name_col].astype(str).str.strip().str.lower()
+            
+            # Convert status column to lowercase string, strip spaces
             df_clean[status_col] = df_clean[status_col].astype(str).str.strip().str.lower()
+            
+            # CRITICAL FIX: If the cell was blank (NaN) or explicitly written as 'nan', force it to 'unpaid'
+            df_clean[status_col] = df_clean[status_col].replace(['nan', ''], 'unpaid')
 
             # 3. Filter rows for the selected person
             person_df = df_clean[df_clean[name_col] == selected_name]
 
             # 4. Filter rows where the status column is NOT 'paid'
-            # This captures 'unpaid', 'pending', empty/blank cells ('nan'), etc.
             unpaid_df = person_df[person_df[status_col] != 'paid']
 
             # 5. Extract numeric values, removing currency symbols safely
-            # Strips out everything except numbers and decimal points
             unpaid_costs = unpaid_df[cost_col].astype(str).str.replace(r'[^\d\.]', '', regex=True)
             
             # Convert empty text to 0 instead of dropping the row, then sum
@@ -70,7 +73,7 @@ if selected_name != "Select your profile...":
             if total_debt > 0:
                 # Displays standard metric styling
                 st.metric(label="Current Balance Owed", value=f"₱ {total_debt:,.2f}")
-                st.caption("Amounts are automatically added up from all unchecked or unpaid line items.")
+                st.caption("Amounts are automatically added up from all blank, unchecked, or unpaid line items.")
                 
                 # Shows the breakdown items so the user knows exactly what they are paying for
                 with st.expander("📋 View Unpaid Items Details"):
@@ -78,12 +81,12 @@ if selected_name != "Select your profile...":
             else:
                 st.success("🎉 Balance clear! You have no outstanding amounts.")
 
-            # ---- OPTIONAL DEBUGGER EXPANDER ----
+            # ---- SYSTEM DEVELOPER DIAGNOSIS ----
             with st.expander("⚙️ System Developer Diagnosis"):
                 st.write("**Detected Columns:**", list(df.columns))
                 st.write(f"**Identified Name Col:** `{name_col}`, **Status Col:** `{status_col}`, **Cost Col:** `{cost_col}`")
                 st.write("**Rows found for you:**", len(person_df))
-                st.write("**Unpaid rows found for you:**", len(unpaid_df))
+                st.write("**Unpaid/Blank rows found for you:**", len(unpaid_df))
                 st.write("**Your raw data rows (Top 5):**")
                 st.dataframe(df.head(5))
 
