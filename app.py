@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # 1. Setup App Title and Google Sheets Base URL
-st.title("Member Debt Tracker & Viewer")
+st.title("MarkIsALoanDaddyShark")
 
 # Convert the standard sharing link to a direct download link for Pandas
 share_url = "https://docs.google.com/spreadsheets/d/1ZDK7eQlf7OECJYOVC4L1EaObTPD_2S7y14KyI8sJSM4/edit?usp=sharing"
@@ -37,7 +37,7 @@ if selected_member != "Select your name...":
                 total_debt = pd.to_numeric(unpaid_rows["Cost/Individual"], errors="coerce").sum()
                 
                 # Display the debt prominently
-                st.markdown(f"### **Debt: ${total_debt:,.2f}**")
+                st.markdown(f"### **Debt: ₱{total_debt:,.2f}**")
                 
             else:
                 st.error("Error: Could not find 'Status' or 'Cost/Individual' columns in your sheet.")
