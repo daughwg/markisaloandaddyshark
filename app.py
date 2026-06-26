@@ -1,70 +1,65 @@
 import streamlit as st
 import pandas as pd
 
-# Set up page layout
-st.set_page_config(page_title="Friendship Ledger", page_icon="📝", layout="centered")
+# 1. Setup App Title and Google Sheets Base URL
+st.title("Member Debt Tracker & Viewer")
 
-# Your specific Google Sheet ID
-SHEET_ID = "1ZDK7eQlf7OECJYOVC4L1EaObTPD_2S7y14KyI8sJSM4"
-CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
+# Convert the standard sharing link to a direct download link for Pandas
+share_url = "https://docs.google.com/spreadsheets/d/1ZDK7eQlf7OECJYOVC4L1EaObTPD_2S7y14KyI8sJSM4/edit?usp=sharing"
+download_url = share_url.replace("/edit?usp=sharing", "/export?format=xlsx")
 
-# Centralized Sheet link
-BASE_LINK = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit?usp=sharing"
+# 2. Step 1: Ask the user to select who they are
+members = ["Select your name...", "Barabad", "Esbra", "Genoring", "Limen", "Palmeras"]
+selected_member = st.selectbox("Who are you?", members)
 
-@st.cache_data(ttl=30)  # Re-checks your sheet every 30 seconds for changes
-def load_data():
-    try:
-        df = pd.read_csv(CSV_URL)
-        # Standardize columns to avoid case-sensitivity errors
-        df.columns = [str(c).strip().lower() for c in df.columns]
-        return df
-    except Exception as e:
-        return None
-
-df = load_data()
-
-st.title("⚖️ Balanced Account Ledger")
-st.write("Select your name below to view any remaining balance details.")
-
-# The specific individual groups requested
-options = ["Select your profile...", "barabad", "esbra", "genoring", "limen", "palmeras"]
-selected_name = st.selectbox("Who is logging in?", options)
-
-if selected_name != "Select your profile...":
-    st.divider()
+# Only proceed if a valid name is chosen
+if selected_member != "Select your name...":
     
-    if df is not None:
+    # Fetch the data for the selected member (assuming sheet names match their names perfectly)
+    with st.spinner(f"Loading data for {selected_member}..."):
         try:
-            # Dynamically identify the names column (assuming it's column 1 or named 'name')
-            name_col = 'name' if 'name' in df.columns else df.columns[0]
+            # Read the specific sheet corresponding to the selected member
+            df = pd.read_excel(download_url, sheet_name=selected_member)
             
-            # Filter rows for the selected person
-            person_df = df[df[name_col].astype(str).str.strip().str.lower() == selected_name]
+            # Clean up column names (remove any accidental leading/trailing spaces)
+            df.columns = df.columns.str.strip()
             
-            # Filter rows where the status column is NOT 'paid'
-            status_col = 'status' if 'status' in df.columns else 'status column'
-            unpaid_df = person_df[person_df['status'].astype(str).str.strip().str.lower() != 'paid']
-            
-            # Isolate the Cost/Individual values and drop currency formatting symbols safely
-            cost_col = 'cost/individual' if 'cost/individual' in df.columns else 'cost'
-            unpaid_costs = unpaid_df[cost_col].astype(str).str.replace(r'[^\d\.]', '', regex=True)
-            total_debt = pd.to_numeric(unpaid_costs, errors='coerce').sum()
-            
-            st.subheader(f"Summary for: **{selected_name.upper()}**")
-            
-            if total_debt > 0:
-                # Displays standard metric styling
-                st.metric(label="Current Balance Owed", value=f"₱ {total_debt:,.2f}")
-                st.caption("Amounts are automatically added up from all unchecked or unpaid line items.")
-            else:
-                st.success("🎉 Balance clear! You have no outstanding amounts outstanding.")
+            # 3. Step 2: Calculate and display the debt amount
+            # Verify required columns exist in the sheet
+            if "Status" in df.columns and "Cost/Individual" in df.columns:
                 
-        except Exception:
-            st.warning("⚠️ Connected to sheet, but formatting doesn't match standard layout headers.")
-            st.info("Ensure headers match exactly: 'Name', 'Cost/Individual', and 'Status'.")
-    else:
-        st.error("Could not fetch the database records. Please double-check sheet sharing access permissions.")
+                # Filter rows where Status is 'unpaid' (case-insensitive and stripped of spaces)
+                unpaid_filter = df["Status"].astype(str).str.strip().str.lower() == "unpaid"
+                unpaid_rows = df[unpaid_filter]
+                
+                # Sum the 'Cost/Individual' column for those unpaid rows
+                # .to_numeric ensures it handles any formatting issues gracefully
+                total_debt = pd.to_numeric(unpaid_rows["Cost/Individual"], errors="coerce").sum()
+                
+                # Display the debt prominently
+                st.markdown(f"### **Debt: ${total_debt:,.2f}**")
+                
+            else:
+                st.error("Error: Could not find 'Status' or 'Cost/Individual' columns in your sheet.")
+                st.write("Available columns are:", list(df.columns))
 
-    st.write("---")
-    # Redirects straight to their workspace context
-    st.link_button(f"📂 Open Spreadsheet Workspace", BASE_LINK)
+            st.write("---")
+
+            # 4. Step 3: Add a button option to view their spreadsheet data
+            # We initialize a toggle state so the data stays visible when clicked
+            if f"show_{selected_member}" not in st.session_state:
+                st.session_state[f"show_{selected_member}"] = False
+
+            # Button to toggle spreadsheet visibility
+            if st.button(f"View Spreadsheet for {selected_member}"):
+                st.session_state[f"show_{selected_member}"] = not st.session_state[f"show_{selected_member}"]
+
+            # If the button toggle is active, display the interactive dataframe
+            if st.session_state[f"show_{selected_member}"]:
+                st.subheader(f"{selected_member}'s Detailed Statement")
+                st.dataframe(df, use_container_width=True)
+                
+        except ValueError:
+            st.error(f"Could not find a sheet named '{selected_member}' in the Google Sheet. Please check your sheet capitalization.")
+        except Exception as e:
+            st.error(f"An error occurred while fetching data: {e}")
