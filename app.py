@@ -9,7 +9,7 @@ share_url = "https://docs.google.com/spreadsheets/d/1ZDK7eQlf7OECJYOVC4L1EaObTPD
 download_url = share_url.replace("/edit?usp=sharing", "/export?format=xlsx")
 
 # 2. Step 1: Ask the user to select who they are
-members = ["Select your name...", "Asis", "BaliscoC", "BalsicoD", "Barabad", "Batistil", "Bonajos", "Brodeth", "Derecho", "Enaje", "Esbra", "Genoring", "Limen", "Palmeras", "Pamanian", "Soniega"]
+members = ["Select your name...", "Abenoja", "Abrantes","Asis", "BaliscoC", "BalsicoD", "Barabad", "Batistil", "Bonajos", "Brodeth", "Derecho", "Enaje", "Esbra", "Genoring", "Limen", "Palmeras", "Pamanian", "Soniega"]
 selected_member = st.selectbox("May Utang ka saken!!! Pay Up!!!", members)
 
 # Only proceed if a valid name is chosen
