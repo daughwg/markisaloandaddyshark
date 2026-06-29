@@ -45,7 +45,7 @@ st.markdown(
     .gold-title {
         text-align: center !important; 
         color: #FFD700 !important; 
-        font-size: 3.8rem !important; 
+        font-size: 3.5rem !important; 
         text-shadow: 3px 3px 6px rgba(0,0,0,0.9) !important; 
         font-weight: bold !important;
         font-family: 'Arial Black', sans-serif !important;
