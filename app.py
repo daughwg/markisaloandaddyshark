@@ -41,7 +41,18 @@ add_bg_from_url(direct_image_url)
 # 1. Setup App Title and Google Sheets Base URL
 st.markdown(
     """
-    <h1 style='text-align: center; color: #FFD700; font-size: 3.5rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.9); font-weight: bold;'>
+    <style>
+    .gold-title {
+        text-align: center !important; 
+        color: #FFD700 !important; 
+        font-size: 3.8rem !important; 
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.9) !important; 
+        font-weight: bold !important;
+        font-family: 'Arial Black', sans-serif !important;
+        margin-bottom: 20px !important;
+    }
+    </style>
+    <h1 class="gold-title">
         MarkIsALoanDaddyShark
     </h1>
     """, 
