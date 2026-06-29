@@ -39,16 +39,23 @@ add_bg_from_url(direct_image_url)
 
 
 # 1. Setup App Title and Google Sheets Base URL
+# 1. Setup App Title with Single Line Enforcement
 st.markdown(
     """
     <style>
     .gold-title {
         text-align: center !important; 
         color: #FFD700 !important; 
-        font-size: 3.5rem !important; 
-        text-shadow: 3px 3px 6px rgba(0,0,0,0.9) !important; 
+        
+        /* 1. This forces the text to stay on ONE line only */
+        white-space: nowrap !important; 
+        
+        /* 2. Adjusted size slightly so it fits across standard screens */
+        font-size: 3.2rem !important; 
+        
+        text-shadow: 4px 4px 8px rgba(0,0,0,0.9) !important; 
         font-weight: bold !important;
-        font-family: 'Arial Black', sans-serif !important;
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
         margin-bottom: 20px !important;
     }
     </style>
