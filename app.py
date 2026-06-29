@@ -4,8 +4,8 @@ import pandas as pd
 # --- GOOGLE DRIVE BACKGROUND IMAGE CONFIGURATION ---
 # 1. Get the link to the specific image inside your folder.
 # 2. Extract the file ID and paste it below.
-file_id = "https://drive.google.com/drive/folders/1DpqXnLinz8tUVi4mCXd0m3ZJTnj0Fl06?usp=sharing" 
-direct_image_url = f"https://lh3.googleusercontent.com/d/{https://drive.google.com/drive/folders/1DpqXnLinz8tUVi4mCXd0m3ZJTnj0Fl06?usp=sharing}"
+file_id = "1tH5qej3py4eG7FLcgd9KnToWlVbNGuRR" 
+direct_image_url = f"https://lh3.googleusercontent.com/d/{file_id}"
 
 def add_bg_from_url(url):
     st.markdown(
