@@ -1,6 +1,43 @@
 import streamlit as st
 import pandas as pd
 
+# --- GOOGLE DRIVE BACKGROUND IMAGE CONFIGURATION ---
+# 1. Get the link to the specific image inside your folder.
+# 2. Extract the file ID and paste it below.
+file_id = "https://drive.google.com/drive/folders/1DpqXnLinz8tUVi4mCXd0m3ZJTnj0Fl06?usp=sharing" 
+direct_image_url = f"https://lh3.googleusercontent.com/d/{https://drive.google.com/drive/folders/1DpqXnLinz8tUVi4mCXd0m3ZJTnj0Fl06?usp=sharing}"
+
+def add_bg_from_url(url):
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("{url}");
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }}
+        
+        /* Optional: Makes the text overlay readable against the background */
+        h1, h2, h3, p, label {{
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }}
+        
+        /* Optional: Gives your select box a clean, readable background */
+        .stSelectbox div[data-baseweb="select"] {{
+            background-color: rgba(255, 255, 255, 0.9) !important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Inject the background
+add_bg_from_url(direct_image_url)
+# --------------------------------------------------
+
+
 # 1. Setup App Title and Google Sheets Base URL
 st.title("🦈💰MarkLoanDaddyShark💰🦈")
 
