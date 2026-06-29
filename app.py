@@ -39,7 +39,14 @@ add_bg_from_url(direct_image_url)
 
 
 # 1. Setup App Title and Google Sheets Base URL
-st.title("🦈💰MarkLoanDaddyShark💰🦈")
+st.markdown(
+    """
+    <h1 style='text-align: center; color: #FFD700; font-size: 3.5rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.9); font-weight: bold;'>
+        MarkIsALoanDaddyShark
+    </h1>
+    """, 
+    unsafe_allow_html=True
+)
 
 # Convert the standard sharing link to a direct download link for Pandas
 share_url = "https://docs.google.com/spreadsheets/d/1ZDK7eQlf7OECJYOVC4L1EaObTPD_2S7y14KyI8sJSM4/edit?usp=sharing"
